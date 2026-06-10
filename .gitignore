@@ -22,6 +22,7 @@ venv/
 logs/
 *.log
 output/
+data/
 
 # OS / editor
 .DS_Store
