@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vad-audio-input"
+dynamic = ["version"]
+description = "Segment long-form speech audio at silence boundaries using VAD."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.26.4",
+    "soundfile>=0.12.1",
+    "librosa>=0.10.2",
+    "silero-vad>=5.1.2",
+    "torch>=2.2.2",
+    "torchaudio>=2.2.2",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=9.0.3"]
+
+[project.scripts]
+vad-audio-input = "vad_audio_input.cli:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "vad_audio_input.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["vad_audio_input*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra"

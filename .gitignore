@@ -1,0 +1,29 @@
+# Claude Code
+.claude/
+CLAUDE.md
+SPEC.md
+
+# Secrets
+.env
+.env.local
+*.key
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+
+# Project artifacts
+logs/
+*.log
+output/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
