@@ -1,10 +1,10 @@
 """Segment filename construction.
 
-Pattern: ``{stem}_segment{NNNNN}_{start}_{end}`` where times are seconds with three
+Pattern: ``{stem}_seg{NNNNN}_{start}_{end}`` where times are seconds with three
 decimals, dynamic integer width, and ``'.'`` replaced by ``'p'``.
 
 Example: segment #1 of ``audio-test`` spanning 0.000s-1.150s ->
-``audio-test_segment00001_0p000_1p150``.
+``audio-test_seg00001_0p000_1p150``.
 """
 
 from typing import Final
@@ -32,7 +32,7 @@ def format_time(seconds: float) -> str:
 def segment_basename(stem: str, index: int, start_ms: float, end_ms: float) -> str:
     """Build the segment basename (without extension).
 
-    The pattern is ``{stem}_segment{NNNNN}_{start}_{end}`` where ``NNNNN`` is the
+    The pattern is ``{stem}_seg{NNNNN}_{start}_{end}`` where ``NNNNN`` is the
     5-digit zero-padded sequence number and the times are formatted by
     :func:`format_time`.
 
@@ -43,9 +43,9 @@ def segment_basename(stem: str, index: int, start_ms: float, end_ms: float) -> s
         end_ms: Segment end, in milliseconds.
 
     Returns:
-        The segment basename, e.g. ``"audio-test_segment00001_0p000_1p150"``.
+        The segment basename, e.g. ``"audio-test_seg00001_0p000_1p150"``.
     """
     seq: str = str(index).zfill(_SEQ_WIDTH)
     start: str = format_time(start_ms / 1000.0)
     end: str = format_time(end_ms / 1000.0)
-    return f"{stem}_segment{seq}_{start}_{end}"
+    return f"{stem}_seg{seq}_{start}_{end}"

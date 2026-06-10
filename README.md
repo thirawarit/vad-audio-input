@@ -91,22 +91,22 @@ added buffers.
 ```
 OUTPUT_DIR/
   <input-stem>/
-    <input-stem>_segment00001_<start>_<end>.<ext>
-    <input-stem>_segment00002_<start>_<end>.<ext>
+    <input-stem>_seg00001_<start>_<end>.<ext>
+    <input-stem>_seg00002_<start>_<end>.<ext>
     ...
     manifest.json
 ```
 
 ### Filename pattern
 
-`{stem}_segment{NNNNN}_{start}_{end}`
+`{stem}_seg{NNNNN}_{start}_{end}`
 
 - `NNNNN` — 1-based sequence, 5-digit zero-padded.
 - `start` / `end` — seconds with 3 decimals, `.` replaced by `p`, dynamic integer
   width.
 
 Example: the first segment of `audio-test` spanning 0.000s–1.150s →
-`audio-test_segment00001_0p000_1p150.wav`.
+`audio-test_seg00001_0p000_1p150.wav`.
 
 ### Manifest
 
@@ -131,7 +131,7 @@ the per-segment metadata:
   "segments": [
     {
       "index": 1,
-      "filename": "audio-test_segment00001_0p000_1p150.wav",
+      "filename": "audio-test_seg00001_0p000_1p150.wav",
       "start_ms": 0.0,
       "end_ms": 1150.0,
       "duration_ms": 1150.0,
