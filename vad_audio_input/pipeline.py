@@ -42,10 +42,12 @@ class RunResult:
 
     Attributes:
         succeeded: Input paths processed without error.
+        skipped: Input paths skipped because their output already exists.
         failed: Input paths skipped due to per-file errors.
     """
 
     succeeded: List[Path] = field(default_factory=list)
+    skipped: List[Path] = field(default_factory=list)
     failed: List[Path] = field(default_factory=list)
 
     @property
@@ -136,12 +138,13 @@ def process_file(
     seg_config: SegmentationConfig,
     out_config: OutputConfig,
     lang: Language,
-) -> None:
+) -> bool:
     """Process a single input file: detect speech, segment, and write outputs.
 
     Loads the audio, runs VAD on a 16 kHz mono copy, segments the speech, then
     writes each padded segment plus a ``manifest.json`` into a per-stem subfolder
-    of ``output_root``.
+    of ``output_root``. If that subfolder already contains a ``manifest.json``
+    from a prior complete run, the file is skipped without reprocessing.
 
     Args:
         source: Input audio file.
@@ -151,10 +154,21 @@ def process_file(
         out_config: Output encoding and buffer settings.
         lang: Language for log messages.
 
+    Returns:
+        ``True`` if the file was processed, ``False`` if it was skipped because
+        its output already exists.
+
     Raises:
         RuntimeError: If the input cannot be decoded.
     """
     _LOGGER.info(translate("processing_file", lang, path=str(source)))
+
+    stem: str = source.stem
+    out_dir: Path = output_root / stem
+    manifest_path: Path = out_dir / "manifest.json"
+    if manifest_path.exists():
+        _LOGGER.info(translate("skip_existing", lang, path=str(source), out_dir=str(out_dir)))
+        return False
 
     loaded: audio_io.LoadedAudio = audio_io.load_audio(source)
     _LOGGER.info(
@@ -175,8 +189,6 @@ def process_file(
 
     segments: List[Segment] = segment_spans(spans, seg_config)
 
-    stem: str = source.stem
-    out_dir: Path = output_root / stem
     out_dir.mkdir(parents=True, exist_ok=True)
     ext: str = out_config.out_format.lower()
 
@@ -210,11 +222,11 @@ def process_file(
         segments,
         filenames,
     )
-    manifest_path: Path = out_dir / "manifest.json"
     manifest_path.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     _LOGGER.info(translate("wrote_segments", lang, count=len(segments), path=str(out_dir)))
+    return True
 
 
 def run(
@@ -249,8 +261,13 @@ def run(
 
     for source in files:
         try:
-            process_file(source, output_root, backend, seg_config, out_config, lang)
-            result.succeeded.append(source)
+            did_process: bool = process_file(
+                source, output_root, backend, seg_config, out_config, lang
+            )
+            if did_process:
+                result.succeeded.append(source)
+            else:
+                result.skipped.append(source)
         except Exception as exc:  # skip & log, continue
             _LOGGER.warning(
                 translate("skip_file_error", lang, path=str(source), error=str(exc))
@@ -258,6 +275,12 @@ def run(
             result.failed.append(source)
 
     _LOGGER.info(
-        translate("done", lang, ok=len(result.succeeded), failed=len(result.failed))
+        translate(
+            "done",
+            lang,
+            ok=len(result.succeeded),
+            skipped=len(result.skipped),
+            failed=len(result.failed),
+        )
     )
     return result

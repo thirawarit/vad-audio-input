@@ -43,10 +43,15 @@ _MESSAGES: Final[Dict[str, Dict[Language, str]]] = {
         "th": "ข้าม '{path}': {error}",
         "zh": "跳过 '{path}'：{error}",
     },
+    "skip_existing": {
+        "en": "Skipping '{path}': already processed (manifest found in '{out_dir}').",
+        "th": "ข้าม '{path}': ประมวลผลแล้ว (พบ manifest ใน '{out_dir}')",
+        "zh": "跳过 '{path}'：已处理（在 '{out_dir}' 中找到 manifest）。",
+    },
     "done": {
-        "en": "Done. {ok} file(s) succeeded, {failed} failed.",
-        "th": "เสร็จสิ้น สำเร็จ {ok} ไฟล์ ล้มเหลว {failed} ไฟล์",
-        "zh": "完成。{ok} 个文件成功，{failed} 个失败。",
+        "en": "Done. {ok} file(s) succeeded, {skipped} skipped, {failed} failed.",
+        "th": "เสร็จสิ้น สำเร็จ {ok} ไฟล์ ข้าม {skipped} ไฟล์ ล้มเหลว {failed} ไฟล์",
+        "zh": "完成。{ok} 个文件成功，{skipped} 个跳过，{failed} 个失败。",
     },
 }
 
